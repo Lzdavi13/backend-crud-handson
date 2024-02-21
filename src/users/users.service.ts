@@ -54,8 +54,36 @@ export class UsersService {
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    let userUpdateInput: Prisma.UserUpdateInput = updateUserDto;
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    if (updateUserDto.password) {
+      userUpdateInput = {
+        ...userUpdateInput,
+        password: await bcrypt.hash(updateUserDto.password, 10),
+      };
+    }
+
+    const userUpdated = await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        ...userUpdateInput,
+      },
+    });
+
+    return userUpdated;
   }
 
   remove(id: number) {
