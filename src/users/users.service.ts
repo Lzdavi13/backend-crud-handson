@@ -1,6 +1,7 @@
 import { User } from './entities/user.entity';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -86,7 +87,17 @@ export class UsersService {
     return userUpdated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string): Promise<object> {
+    const deleteUser = await this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+
+    if (!deleteUser) {
+      throw new BadRequestException();
+    }
+
+    return { status: HttpStatus.OK, messsage: 'usuario deletado com sucesso' };
   }
 }
