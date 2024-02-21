@@ -17,7 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorators';
 import { User } from '@prisma/client';
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -37,7 +37,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @Get('me')
   findOne(@CurrentUser() user: User) {
-    console.log(user);
+    return user;
   }
 
   @Patch(':id')
